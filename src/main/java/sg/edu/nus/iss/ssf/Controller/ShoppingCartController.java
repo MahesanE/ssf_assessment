@@ -1,5 +1,8 @@
 package sg.edu.nus.iss.ssf.Controller;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -11,12 +14,25 @@ import jakarta.validation.Valid;
 import sg.edu.nus.iss.ssf.Model.Address;
 //import sg.edu.nus.iss.ssf.Model.Address;
 import sg.edu.nus.iss.ssf.Model.Cart;
+import sg.edu.nus.iss.ssf.Model.Invoice;
 import sg.edu.nus.iss.ssf.Model.Item;
+import sg.edu.nus.iss.ssf.Model.Quotation;
+import sg.edu.nus.iss.ssf.Service.InvoiceService;
+import sg.edu.nus.iss.ssf.Service.QuotationService;
 
 @Controller
 public class ShoppingCartController {
 
-    @GetMapping(path = { "/" })
+    @Autowired
+    private QuotationService quotationService;
+
+    @Autowired
+    private InvoiceService invoiceService;
+
+
+
+
+    @GetMapping(path = {"/", "view1.html"} )
     public String getCart(Model model, HttpSession session) {
 
         // check if it is a new session or nahh
@@ -49,9 +65,30 @@ public class ShoppingCartController {
     }
 
     @GetMapping(path = { "/shippingaddress" })
-    public String getShippingAddress(Model model) {
-        model.addAttribute("address", new Address());
+    public String getShippingAddress(Model model, HttpSession session) {
+        Cart cart = (Cart) session.getAttribute("cart");
+
+        if(cart.getContents().isEmpty()){
+            model.addAttribute("cart", cart);
+            model.addAttribute("item", new Item());
+        } else {
+            model.addAttribute("address", new Address());
+            Address address = (Address) session.getAttribute("address");
+            if (null==address){
+                address = new Address();
+                session.setAttribute("address", address);
+
+            }
+            model.addAttribute("address", address);
+
+        }
+
         return "view2";
+
+
+
+        // model.addAttribute("address", new Address());
+        // return "view2";
     }
 
     @PostMapping(path = { "/shippingaddress" })
@@ -74,47 +111,31 @@ public class ShoppingCartController {
             return "redirect:/"; // Redirect to the cart page if they don't exist
         }
 
+        List<String> items = quotationService.getList(cart);
+        Quotation quotation = quotationService.getQuotations(items);
+
+
+        //Total cost calculate
+        Float totalCost = quotationService.calculateCost(quotation, cart);
+
+        //Create the invioce to display on view3
+        Invoice invoice = invoiceService.generateInvoice(cart, address);
+
+
+
         // Add the cart and address to the model and clear the session
         model.addAttribute("cart", cart);
         model.addAttribute("address", address);
+        model.addAttribute("quotation", quotation);
+        model.addAttribute("totalCost", totalCost);
+        model.addAttribute("invoice", invoice);
         session.removeAttribute("cart");
         session.removeAttribute("address");
 
         return "view3";
+
+     //Sorry teacher i dont know already 
     }
 
-    // @PostMapping(path="/shippingaddress")
-    // public String postCartorder(Model model, HttpSession session, @Valid Address
-    // address, BindingResult result){
-    // if(result.hasErrors()){
-    // return "view2";
-    // }
-    // }
 
-    // @PostMapping("/add")
-    // public String addItem(@Valid @ModelAttribute("item") Item item, BindingResult
-    // result, Model model) {
-    // if (result.hasErrors()) {
-    // return "view1";
-    // }
-
-    // if (items.containsKey(item.getName())) {
-    // // if the item already exists in the cart, add to the quantity
-    // items.get(item.getName()).setQuantity(items.get(item.getName()).getQuantity()
-    // + item.getQuantity());
-    // } else {
-    // // if the item doesn't exist in the cart, add it to the cart
-    // items.put(item.getName(), item);
-    // }
-
-    // // add the shopping cart items to the model
-    // model.addAttribute("items", items.values());
-
-    // // redirect the user back to the view1 page
-    // return "redirect:/add";
-    // }
-    // @GetMapping("/cart")
-    // public String cart(Model model) {
-    // model.addAttribute("items", items.values());
-    // return "cart";
 }

@@ -14,7 +14,7 @@ public class Cart {
         this.contents = contents;
     }
 
-    public void addItem(Item item) {
+     public void addItem(Item item) {
         boolean itemExists = false;
         for (Item existingItem : contents) {
             if (existingItem.getName().equals(item.getName())) {

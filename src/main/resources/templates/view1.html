@@ -13,7 +13,7 @@
 		-->
 
 	<h1>Shopping Cart</h1>
-	<form method="POST" action="/" data-th-object="${item}">
+	<form method="POST" action="/shippingaddress" data-th-object="${item}">
 		<table>
 			<tr>
 				<td>Item:</td>
@@ -28,7 +28,7 @@
 						<option value="instant_noodles">Instant Noodles</option>
 					</select>
 				</td>
-				<!--- error message --->
+				
 				<td data-th-if="${#fields.hasErrors('name')}">
 					<span data-th-errors="*{name}" data-th-errorclass="error"></span>
 				</td>
@@ -40,14 +40,14 @@
 					<input type="number" name="quantity" size="4" placeholder="Quantity" data-th-field="*{quantity}">
 				</td>
 
-				<!--- error message --->
+			
 				<td data-th-if="${#fields.hasErrors('quantity')}">
 					<span data-th-errors="*{quantity}" data-th-errorclass="error"></span>
 				</td>
 			</tr>
 		</table>
 
-		<!-- Only display if not empty  -->
+		
 		<div data-th-unless="${#lists.isEmpty(cart.contents)}">
 			<table border="1" style="margin-top: 2vh; margin-bottom: 2vh;">
 				<thead>
@@ -57,7 +57,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					<!-- iteration though list -->
+					
 					<tr data-th-each="item : ${cart.contents}" data-th-object="${item}">
 						<td>
 							<span data-th-text="*{name}"></span>
@@ -70,13 +70,13 @@
 			</table>
 		</div>
 		<div data-th-if="${#lists.isEmpty(cart.contents)}">
-			<p>Your cart is currently empty</p>
+			<p>Your cart is empty</p>
 		</div>
 
 
 		<div>
-			<button type="submit" >Add</button>
-			<button type="submit" formmethod="GET" formaction="/shippingaddress">Next</button>
+			<button type="submit" formmethod="POST" formaction="/">Add</button>
+			<button type="submit">Next</button>
 		</div>
 	</form>
 

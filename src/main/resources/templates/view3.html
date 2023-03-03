@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Invoice</title>
+</head>
+
+<body>
+    <h1>Invoice</h1>
+    <p>Quotation ID: <span th:text="${invoice}"></span></p>
+    <p>Name: <span th:text="${address.name}"></span></p>
+    <p>Address: <span th:text="${address.address}"></span></p>
+    <table>
+    </table>
+    <p>Total cost: <span th:text="${totalCost}"></span></p>
+</body>
+
+</html>

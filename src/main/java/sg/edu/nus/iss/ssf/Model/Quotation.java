@@ -1,4 +1,4 @@
-package sg.edu.nus.iss.ssf;
+package sg.edu.nus.iss.ssf.Model;
 
 // DO NOT MODIFY THIS FILE
 
